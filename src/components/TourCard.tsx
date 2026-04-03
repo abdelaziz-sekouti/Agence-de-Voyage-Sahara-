@@ -66,7 +66,7 @@ export const TourCard: React.FC<TourCardProps> = ({ tour, layout = 'grid' }) => 
               <p className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">À partir de</p>
               <p className="text-xl font-bold text-desert-night">{formatPrice(tour.price.perPerson)}</p>
             </div>
-            <Link to={`/tour/${tour.id}`} className="btn-primary py-2 px-6 text-sm">
+            <Link to={`/tour/${tour.id}`} className="btn-primary py-2 px-6 text-sm hover:-translate-y-1 hover:bg-desert-night transition-all duration-300">
               Découvrir
             </Link>
           </div>
@@ -107,7 +107,7 @@ export const TourCard: React.FC<TourCardProps> = ({ tour, layout = 'grid' }) => 
           <Heart size={18} fill={isFavorite ? "currentColor" : "none"} />
         </button>
         <div className="absolute bottom-4 left-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
-          <span className="btn-primary w-full py-2 text-sm text-center block">Voir le voyage</span>
+          <span className="btn-primary w-full py-2 text-sm text-center block hover:-translate-y-1 hover:bg-desert-night transition-all duration-300">Découvrir</span>
         </div>
       </Link>
       <div className="p-6">

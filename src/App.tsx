@@ -18,6 +18,7 @@ import { Planner } from './pages/Planner';
 import { CurrencyConverter } from './components/CurrencyConverter';
 import { ScrollToTop } from './components/ScrollToTop';
 import { SocialSidebar } from './components/SocialSidebar';
+import { WhatsAppButton } from './components/WhatsAppButton';
 
 import { AuthPage } from './pages/AuthPage';
 
@@ -60,6 +61,7 @@ export default function App() {
         <Footer />
         <CurrencyConverter />
         <ScrollToTop />
+        <WhatsAppButton />
       </div>
     </ToastProvider>
   );
