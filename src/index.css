@@ -1,0 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Playfair Display", serif;
+  --font-body: "DM Sans", sans-serif;
+
+  --color-sand-50: #fefcf3;
+  --color-sand-100: #fdf6e3;
+  --color-sand-200: #f5e6c0;
+  --color-sand-300: #e8cf8a;
+  --color-sand-400: #d4a84b;
+  --color-sand-500: #c4922a;
+  --color-sahara-gold: #d4a24e;
+  --color-sahara-orange: #e07b3c;
+  --color-sahara-red: #c45a3c;
+  --color-desert-night: #1a1423;
+  --color-desert-dark: #2a2035;
+  --color-desert-mid: #3d3350;
+  --color-desert-light: #5c5278;
+  --color-oasis-green: #4a9e6e;
+  --color-sky-blue: #5ba4cf;
+}
+
+@layer base {
+  body {
+    @apply font-body bg-sand-50 text-desert-night;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+.glass-card {
+  @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-lg;
+}
+
+.btn-primary {
+  @apply bg-sahara-gold hover:bg-sahara-orange text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-sahara-gold/20;
+}
+
+.btn-outline {
+  @apply border-2 border-sahara-gold text-sahara-gold hover:bg-sahara-gold hover:text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-sand-100;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-sand-300 rounded-full hover:bg-sand-400 transition-colors;
+}
+
+/* Leaflet custom markers */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  border-radius: 1rem;
+}
+
+/* Animations */
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-5%, -10%); }
+  20% { transform: translate(-15%, 5%); }
+  30% { transform: translate(7%, -25%); }
+  40% { transform: translate(-5%, 25%); }
+  50% { transform: translate(-15%, 10%); }
+  60% { transform: translate(15%, 0); }
+  70% { transform: translate(0, 15%); }
+  80% { transform: translate(3%, 35%); }
+  90% { transform: translate(-10%, 10%); }
+}
+
+.noise-overlay {
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 9999;
+  animation: grain 8s steps(10) infinite;
+}
+

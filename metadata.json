@@ -1,0 +1,5 @@
+{
+  "name": "Agence de Voyage Sahara",
+  "description": "Plateforme de réservation premium pour expéditions dans le désert du Sahara au Maroc.",
+  "requestFramePermissions": ["geolocation"]
+}
