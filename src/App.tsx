@@ -16,6 +16,8 @@ import { Contact } from './pages/Contact';
 import { DestinationDetail } from './pages/DestinationDetail';
 import { Planner } from './pages/Planner';
 import { CurrencyConverter } from './components/CurrencyConverter';
+import { ScrollToTop } from './components/ScrollToTop';
+import { SocialSidebar } from './components/SocialSidebar';
 
 import { AuthPage } from './pages/AuthPage';
 
@@ -26,6 +28,7 @@ export default function App() {
     <ToastProvider>
       <div className="min-h-screen flex flex-col">
         <Navbar />
+        <SocialSidebar />
         <main className="flex-grow">
           <AnimatePresence mode="wait">
             <motion.div
@@ -56,6 +59,7 @@ export default function App() {
         </main>
         <Footer />
         <CurrencyConverter />
+        <ScrollToTop />
       </div>
     </ToastProvider>
   );

@@ -43,10 +43,10 @@ export const Contact = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[
-                { icon: Phone, label: "Téléphone", value: "+212 5 24 44 55 66", sub: "Lun-Sam, 9h-18h" },
-                { icon: Mail, label: "Email", value: "contact@sahara.ma", sub: "Réponse sous 24h" },
-                { icon: MapPin, label: "Bureau", value: "Merzouga, Maroc", sub: "Avenue des Dunes" },
-                { icon: Clock, label: "Support", value: "24/7", sub: "Pour nos voyageurs" }
+                { icon: Phone, label: "Téléphone", value: "+212 612 236 660", sub: "Lun-Sam, 9h-18h" },
+                { icon: Mail, label: "Email", value: "sekoutiabdelaziz0@gmail.com", sub: "Réponse sous 24h" },
+                { icon: MapPin, label: "Bureau", value: "Marrakech, Maroc", sub: "derb boualam185 s..y..b.a." },
+                { icon: MessageSquare, label: "WhatsApp", value: "+212 612 236 660", sub: "Chatbot 24/7" }
               ].map((item, i) => (
                 <div key={i} className="bg-white p-6 rounded-3xl shadow-sm border border-sand-100">
                   <div className="w-10 h-10 bg-sahara-gold/10 text-sahara-gold rounded-xl flex items-center justify-center mb-4">

@@ -50,15 +50,15 @@ export const Footer = () => {
             <ul className="space-y-4 text-sm text-gray-400">
               <li className="flex items-start gap-3">
                 <MapPin size={18} className="text-sahara-gold shrink-0" />
-                <span>123 Avenue des Dunes, Merzouga, Maroc</span>
+                <span>derb boualam185 s..y..b.a. 40050 marrakech morocco</span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone size={18} className="text-sahara-gold shrink-0" />
-                <span>+212 5 24 44 55 66</span>
+                <span>+212 612 236 660</span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail size={18} className="text-sahara-gold shrink-0" />
-                <span>contact@sahara-voyages.ma</span>
+                <span>sekoutiabdelaziz0@gmail.com</span>
               </li>
             </ul>
           </div>

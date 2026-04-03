@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { 
   ArrowLeft, Star, Clock, Users, MapPin, Check, X, 
-  Calendar, Info, ShieldCheck, Share2, Heart, ChevronRight, Send
+  Calendar, Info, ShieldCheck, Share2, Heart, ChevronRight, Send, ChevronDown, Compass
 } from 'lucide-react';
 import { TOURS, GUIDES } from '../data';
 import { formatPrice, cn, generateId } from '../lib/utils';
@@ -17,6 +17,7 @@ export const TourDetail = () => {
   const tour = tours.find(t => t.id === id);
   const [activeTab, setActiveTab] = useState('aperçu');
   const [selectedImage, setSelectedImage] = useState(0);
+  const [expandedDay, setExpandedDay] = useState<number | null>(1);
   const [newReview, setNewReview] = useState({
     author: '',
     avatar: '',
@@ -220,24 +221,92 @@ export const TourDetail = () => {
             )}
 
             {activeTab === 'itinéraire' && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
                 {tour.itinerary.map((day, i) => (
-                  <div key={i} className="relative pl-12 pb-12 last:pb-0">
-                    <div className="absolute left-0 top-0 w-8 h-8 bg-sahara-gold text-white rounded-full flex items-center justify-center font-bold text-sm z-10">
-                      {day.day}
-                    </div>
-                    {i !== tour.itinerary.length - 1 && (
-                      <div className="absolute left-4 top-8 bottom-0 w-0.5 bg-sand-200" />
-                    )}
-                    <h3 className="text-xl font-display font-bold mb-3">{day.title}</h3>
-                    <p className="text-gray-600 text-sm mb-4 leading-relaxed">{day.description}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {day.activities.map((act, j) => (
-                        <span key={j} className="bg-sand-100 text-desert-night text-[10px] font-bold uppercase px-3 py-1 rounded-full">
-                          {act}
-                        </span>
-                      ))}
-                    </div>
+                  <div key={i} className="bg-white rounded-3xl border border-sand-100 overflow-hidden shadow-sm">
+                    <button
+                      onClick={() => setExpandedDay(expandedDay === day.day ? null : day.day)}
+                      className="w-full flex items-center justify-between p-6 text-left hover:bg-sand-50 transition-all"
+                    >
+                      <div className="flex items-center gap-6">
+                        <div className="w-12 h-12 bg-sahara-gold text-white rounded-2xl flex flex-col items-center justify-center shrink-0 shadow-lg shadow-sahara-gold/20">
+                          <span className="text-[10px] uppercase font-bold leading-none mb-1">Jour</span>
+                          <span className="text-lg font-bold leading-none">{day.day}</span>
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-display font-bold text-desert-night">{day.title}</h3>
+                          <div className="flex items-center gap-4 mt-1">
+                            <span className="flex items-center gap-1.5 text-xs text-gray-400 font-medium">
+                              <Compass size={14} className="text-sahara-gold" />
+                              {day.activities.length} activités
+                            </span>
+                            <span className="flex items-center gap-1.5 text-xs text-gray-400 font-medium">
+                              <MapPin size={14} className="text-sahara-gold" />
+                              {day.accommodation.name}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <motion.div
+                        animate={{ rotate: expandedDay === day.day ? 180 : 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="text-gray-400"
+                      >
+                        <ChevronDown size={24} />
+                      </motion.div>
+                    </button>
+
+                    <AnimatePresence>
+                      {expandedDay === day.day && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="px-6 pb-8 pt-2 border-t border-sand-50">
+                            <div className="pl-[72px] space-y-6">
+                              <p className="text-gray-600 leading-relaxed text-sm">
+                                {day.description}
+                              </p>
+                              
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div>
+                                  <h4 className="text-[10px] uppercase font-bold tracking-widest text-gray-400 mb-4">Activités du jour</h4>
+                                  <div className="space-y-3">
+                                    {day.activities.map((act, j) => (
+                                      <div key={j} className="flex items-center gap-3">
+                                        <div className="w-1.5 h-1.5 bg-sahara-gold rounded-full" />
+                                        <span className="text-sm text-desert-night font-medium">{act}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                                
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div className="p-4 bg-sand-50 rounded-2xl border border-sand-100">
+                                    <h4 className="text-[10px] uppercase font-bold tracking-widest text-gray-400 mb-2">Hébergement</h4>
+                                    <p className="text-xs font-bold text-desert-night">{day.accommodation.name}</p>
+                                    <p className="text-[10px] text-gray-400">{day.accommodation.type}</p>
+                                  </div>
+                                  <div className="p-4 bg-sand-50 rounded-2xl border border-sand-100">
+                                    <h4 className="text-[10px] uppercase font-bold tracking-widest text-gray-400 mb-2">Repas</h4>
+                                    <div className="flex flex-wrap gap-1">
+                                      {day.meals.map((meal, m) => (
+                                        <span key={m} className="text-[10px] font-bold text-sahara-gold bg-sahara-gold/10 px-2 py-0.5 rounded">
+                                          {meal}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 ))}
               </motion.div>
