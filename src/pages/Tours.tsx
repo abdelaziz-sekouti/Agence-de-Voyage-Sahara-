@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Filter, Search, Grid, List as ListIcon, X, ChevronDown, SlidersHorizontal } from 'lucide-react';
+import { Filter, Search, Grid, List as ListIcon, X, ChevronDown, SlidersHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
 import { TOURS } from '../data';
 import { TourCard } from '../components/TourCard';
 import { cn } from '../lib/utils';
@@ -10,19 +10,24 @@ export const Tours = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
+  const [durationRange, setDurationRange] = useState<[number, number]>([0, 30]);
   const [sortBy, setSortBy] = useState('popularité');
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const categories = ["aventure", "culture", "luxury", "familiale", "photographie"];
 
   const filteredTours = useMemo(() => {
+    setCurrentPage(1); // Reset to first page when filters change
     return TOURS.filter(tour => {
       const matchesSearch = tour.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                            tour.description.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory = selectedCategory.length === 0 || selectedCategory.includes(tour.category);
       const matchesPrice = tour.price.perPerson >= priceRange[0] && tour.price.perPerson <= priceRange[1];
+      const matchesDuration = tour.duration.days >= durationRange[0] && tour.duration.days <= durationRange[1];
       
-      return matchesSearch && matchesCategory && matchesPrice;
+      return matchesSearch && matchesCategory && matchesPrice && matchesDuration;
     }).sort((a, b) => {
       if (sortBy === 'prix-croissant') return a.price.perPerson - b.price.perPerson;
       if (sortBy === 'prix-decroissant') return b.price.perPerson - a.price.perPerson;
@@ -30,6 +35,12 @@ export const Tours = () => {
       return 0;
     });
   }, [searchQuery, selectedCategory, priceRange, sortBy]);
+
+  const totalPages = Math.ceil(filteredTours.length / itemsPerPage);
+  const paginatedTours = filteredTours.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const toggleCategory = (cat: string) => {
     setSelectedCategory(prev => 
@@ -106,10 +117,48 @@ export const Tours = () => {
               </div>
             </div>
 
+            <div>
+              <h4 className="text-sm font-bold uppercase tracking-widest text-desert-night mb-6">Durée (jours)</h4>
+              <div className="flex flex-wrap gap-2 mb-6">
+                {[
+                  { label: '1-3', range: [1, 3] as [number, number] },
+                  { label: '4-7', range: [4, 7] as [number, number] },
+                  { label: '8+', range: [8, 30] as [number, number] }
+                ].map(preset => (
+                  <button
+                    key={preset.label}
+                    onClick={() => setDurationRange(preset.range)}
+                    className={cn(
+                      "px-3 py-1.5 rounded-lg text-xs font-bold transition-all border",
+                      durationRange[0] === preset.range[0] && durationRange[1] === preset.range[1]
+                        ? "bg-sahara-gold border-sahara-gold text-white"
+                        : "bg-white border-sand-200 text-gray-500 hover:border-sahara-gold"
+                    )}
+                  >
+                    {preset.label} jours
+                  </button>
+                ))}
+              </div>
+              <input 
+                type="range" 
+                min="1" 
+                max="30" 
+                step="1"
+                value={durationRange[1]}
+                onChange={(e) => setDurationRange([1, parseInt(e.target.value)])}
+                className="w-full accent-sahara-gold"
+              />
+              <div className="flex justify-between mt-2 text-xs font-bold text-gray-400">
+                <span>1 jour</span>
+                <span>{durationRange[1]} jours</span>
+              </div>
+            </div>
+
             <button 
               onClick={() => {
                 setSelectedCategory([]);
                 setPriceRange([0, 10000]);
+                setDurationRange([0, 30]);
                 setSearchQuery('');
               }}
               className="w-full py-3 text-sm font-bold text-sahara-red border border-sahara-red/20 rounded-xl hover:bg-sahara-red hover:text-white transition-all"
@@ -155,14 +204,54 @@ export const Tours = () => {
               </div>
             </div>
 
-            {filteredTours.length > 0 ? (
-              <div className={cn(
-                "grid gap-8",
-                view === 'grid' ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1"
-              )}>
-                {filteredTours.map(tour => (
-                  <TourCard key={tour.id} tour={tour} layout={view} />
-                ))}
+            {paginatedTours.length > 0 ? (
+              <div className="space-y-12">
+                <div className={cn(
+                  "grid gap-8",
+                  view === 'grid' ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1"
+                )}>
+                  {paginatedTours.map(tour => (
+                    <TourCard key={tour.id} tour={tour} layout={view} />
+                  ))}
+                </div>
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-2 pt-8 border-t border-sand-200">
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                      className="p-2 rounded-xl border border-sand-200 bg-white text-desert-night disabled:opacity-50 disabled:cursor-not-allowed hover:bg-sand-50 transition-all"
+                    >
+                      <ChevronLeft size={20} />
+                    </button>
+                    
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                        <button
+                          key={page}
+                          onClick={() => setCurrentPage(page)}
+                          className={cn(
+                            "w-10 h-10 rounded-xl font-bold text-sm transition-all",
+                            currentPage === page 
+                              ? "bg-sahara-gold text-white shadow-lg shadow-sahara-gold/20" 
+                              : "bg-white border border-sand-200 text-desert-night hover:bg-sand-50"
+                          )}
+                        >
+                          {page}
+                        </button>
+                      ))}
+                    </div>
+
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      disabled={currentPage === totalPages}
+                      className="p-2 rounded-xl border border-sand-200 bg-white text-desert-night disabled:opacity-50 disabled:cursor-not-allowed hover:bg-sand-50 transition-all"
+                    >
+                      <ChevronRight size={20} />
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="py-24 text-center">
@@ -218,6 +307,43 @@ export const Tours = () => {
                     ))}
                   </div>
                 </div>
+                <div>
+                  <h4 className="text-sm font-bold uppercase tracking-widest text-desert-night mb-6">Durée (jours)</h4>
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {[
+                      { label: '1-3', range: [1, 3] as [number, number] },
+                      { label: '4-7', range: [4, 7] as [number, number] },
+                      { label: '8+', range: [8, 30] as [number, number] }
+                    ].map(preset => (
+                      <button
+                        key={preset.label}
+                        onClick={() => setDurationRange(preset.range)}
+                        className={cn(
+                          "px-3 py-1.5 rounded-lg text-xs font-bold transition-all border",
+                          durationRange[0] === preset.range[0] && durationRange[1] === preset.range[1]
+                            ? "bg-sahara-gold border-sahara-gold text-white"
+                            : "bg-white border-sand-200 text-gray-500 hover:border-sahara-gold"
+                        )}
+                      >
+                        {preset.label} jours
+                      </button>
+                    ))}
+                  </div>
+                  <input 
+                    type="range" 
+                    min="1" 
+                    max="30" 
+                    step="1"
+                    value={durationRange[1]}
+                    onChange={(e) => setDurationRange([1, parseInt(e.target.value)])}
+                    className="w-full accent-sahara-gold"
+                  />
+                  <div className="flex justify-between mt-2 text-xs font-bold text-gray-400">
+                    <span>1 jour</span>
+                    <span>{durationRange[1]} jours</span>
+                  </div>
+                </div>
+
                 <button 
                   onClick={() => setIsFilterDrawerOpen(false)}
                   className="w-full btn-primary py-4"

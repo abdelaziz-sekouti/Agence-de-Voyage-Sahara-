@@ -109,3 +109,24 @@ export interface Booking {
   createdAt: string;
   reference: string;
 }
+
+export interface Message {
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  status: 'unread' | 'read' | 'replied';
+  createdAt: string;
+}
+
+export interface PlannedTrip {
+  id: string;
+  userId: string;
+  destinations: string[];
+  startDate: string;
+  duration: number;
+  budget: number;
+  travelers: number;
+  createdAt: string;
+}

@@ -44,9 +44,9 @@ export const TOURS: Tour[] = [
     included: ["Transport en 4x4 climatisé", "Guide local francophone", "Toutes les nuitées", "Demi-pension"],
     excluded: ["Boissons", "Pourboires", "Activités optionnelles (Quad, Buggy)"],
     gallery: [
-      "https://picsum.photos/seed/desert1/1200/800",
-      "https://picsum.photos/seed/desert2/1200/800",
-      "https://picsum.photos/seed/desert3/1200/800"
+      "https://picsum.photos/seed/merzouga1/1200/800",
+      "https://picsum.photos/seed/merzouga2/1200/800",
+      "https://picsum.photos/seed/merzouga3/1200/800"
     ],
     rating: { average: 4.9, count: 128, distribution: { 5: 110, 4: 15, 3: 3, 2: 0, 1: 0 } },
     reviews: [],
@@ -75,7 +75,11 @@ export const TOURS: Tour[] = [
     highlights: ["Dunes sauvages", "Lac Iriqui", "Nuits étoilées"],
     included: ["Transport 4x4", "Guide expert", "Pension complète"],
     excluded: ["Vols", "Assurance"],
-    gallery: ["https://picsum.photos/seed/chigaga1/1200/800"],
+    gallery: [
+      "https://picsum.photos/seed/chigaga1/1200/800",
+      "https://picsum.photos/seed/chigaga2/1200/800",
+      "https://picsum.photos/seed/chigaga3/1200/800"
+    ],
     rating: { average: 4.8, count: 45, distribution: { 5: 38, 4: 5, 3: 2, 2: 0, 1: 0 } },
     reviews: [],
     availability: [{ date: "2026-06-01", spotsLeft: 6, status: "available" }],
@@ -100,7 +104,11 @@ export const TOURS: Tour[] = [
     highlights: ["Highlight 1", "Highlight 2"],
     included: ["Inclus 1"],
     excluded: ["Exclu 1"],
-    gallery: [`https://picsum.photos/seed/tour${i + 3}/1200/800`],
+    gallery: [
+      `https://picsum.photos/seed/tour${i + 3}-1/1200/800`,
+      `https://picsum.photos/seed/tour${i + 3}-2/1200/800`,
+      `https://picsum.photos/seed/tour${i + 3}-3/1200/800`
+    ],
     rating: { average: 4.5 + (i % 5) / 10, count: 20 + i, distribution: { 5: 15, 4: 5, 3: 0, 2: 0, 1: 0 } },
     reviews: [],
     availability: [{ date: "2026-07-01", spotsLeft: 10, status: "available" as const }],

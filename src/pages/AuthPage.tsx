@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { Mail, Lock, User, ArrowRight, Github, Chrome } from 'lucide-react';
 import { useStore } from '../store';
 import { useNavigate } from 'react-router-dom';
+import { toast } from '../components/Toast';
 
 export const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -15,14 +16,17 @@ export const AuthPage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Simulate auth
+    const isAdmin = email.toLowerCase().includes('admin');
     const userData = {
       id: 'user_' + Math.random().toString(36).substr(2, 9),
-      name: isLogin ? (email.split('@')[0]) : name,
+      name: isLogin ? (email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1)) : name,
       email,
-      role: email.includes('admin') ? 'admin' : 'user' as 'admin' | 'user'
+      role: isAdmin ? 'admin' : 'user' as 'admin' | 'user',
+      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`
     };
     setUser(userData);
-    navigate(userData.role === 'admin' ? '/admin' : '/dashboard');
+    toast.success(isLogin ? "Bon retour !" : "Compte créé avec succès !");
+    navigate(isAdmin ? '/admin' : '/dashboard');
   };
 
   return (

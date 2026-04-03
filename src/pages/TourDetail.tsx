@@ -3,21 +3,52 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { 
   ArrowLeft, Star, Clock, Users, MapPin, Check, X, 
-  Calendar, Info, ShieldCheck, Share2, Heart, ChevronRight
+  Calendar, Info, ShieldCheck, Share2, Heart, ChevronRight, Send
 } from 'lucide-react';
 import { TOURS, GUIDES } from '../data';
-import { formatPrice, cn } from '../lib/utils';
+import { formatPrice, cn, generateId } from '../lib/utils';
 import { useStore } from '../store';
+import { toast } from '../components/Toast';
 
 export const TourDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const tour = TOURS.find(t => t.id === id);
-  const { favorites, toggleFavorite } = useStore();
+  const { tours, favorites, toggleFavorite, addReview } = useStore();
+  const tour = tours.find(t => t.id === id);
   const [activeTab, setActiveTab] = useState('aperçu');
   const [selectedImage, setSelectedImage] = useState(0);
+  const [newReview, setNewReview] = useState({
+    author: '',
+    avatar: '',
+    rating: 5,
+    date: new Date().toISOString().split('T')[0],
+    text: ''
+  });
 
   if (!tour) return <div>Tour non trouvé</div>;
+
+  const handleReviewSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const review = {
+      id: generateId(),
+      author: newReview.author,
+      avatar: newReview.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${newReview.author}`,
+      rating: newReview.rating,
+      date: newReview.date,
+      text: newReview.text,
+      tourId: tour.id
+    };
+
+    addReview(tour.id, review);
+    toast.success("Merci pour votre avis !");
+    setNewReview({
+      author: '',
+      avatar: '',
+      rating: 5,
+      date: new Date().toISOString().split('T')[0],
+      text: ''
+    });
+  };
 
   const isFavorite = favorites.includes(tour.id);
   const guide = GUIDES[0]; // Simplified for demo
@@ -266,6 +297,118 @@ export const TourDetail = () => {
                       ))}
                     </div>
                   </div>
+                </div>
+              </motion.div>
+            )}
+
+            {activeTab === 'avis' && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-12">
+                {/* Reviews List */}
+                <div className="space-y-8">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-2xl font-display font-bold">Avis des voyageurs ({tour.rating.count})</h3>
+                    <div className="flex items-center gap-2 text-sahara-gold font-bold">
+                      <Star size={24} fill="currentColor" />
+                      <span className="text-2xl">{tour.rating.average}</span>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-6">
+                    {tour.reviews.length > 0 ? tour.reviews.map((review) => (
+                      <div key={review.id} className="bg-white p-6 rounded-3xl border border-sand-100 shadow-sm">
+                        <div className="flex justify-between items-start mb-4">
+                          <div className="flex items-center gap-4">
+                            <img src={review.avatar} alt={review.author} className="w-12 h-12 rounded-full object-cover border-2 border-sand-100" />
+                            <div>
+                              <h4 className="font-bold text-desert-night">{review.author}</h4>
+                              <p className="text-xs text-gray-400">{review.date}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1 text-sahara-gold">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <Star key={i} size={14} fill={i < review.rating ? "currentColor" : "none"} />
+                            ))}
+                          </div>
+                        </div>
+                        <p className="text-gray-600 text-sm leading-relaxed italic">"{review.text}"</p>
+                      </div>
+                    )) : (
+                      <div className="py-12 text-center bg-white rounded-3xl border border-sand-100 italic text-gray-400">
+                        Soyez le premier à laisser un avis !
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Review Form */}
+                <div className="bg-white p-8 rounded-[2.5rem] shadow-xl border border-sand-100">
+                  <h3 className="text-xl font-display font-bold mb-6">Laissez votre avis</h3>
+                  <form onSubmit={handleReviewSubmit} className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold uppercase tracking-widest text-gray-400">Votre Nom</label>
+                        <input 
+                          type="text" 
+                          required 
+                          value={newReview.author}
+                          onChange={(e) => setNewReview({ ...newReview, author: e.target.value })}
+                          className="w-full p-4 bg-sand-50 rounded-2xl border border-sand-200 focus:outline-none focus:border-sahara-gold" 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold uppercase tracking-widest text-gray-400">URL de l'avatar (optionnel)</label>
+                        <input 
+                          type="text" 
+                          value={newReview.avatar}
+                          onChange={(e) => setNewReview({ ...newReview, avatar: e.target.value })}
+                          placeholder="https://picsum.photos/seed/user/100/100"
+                          className="w-full p-4 bg-sand-50 rounded-2xl border border-sand-200 focus:outline-none focus:border-sahara-gold" 
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold uppercase tracking-widest text-gray-400">Note</label>
+                        <div className="flex gap-2">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <button
+                              key={star}
+                              type="button"
+                              onClick={() => setNewReview({ ...newReview, rating: star })}
+                              className={cn(
+                                "p-2 rounded-lg transition-all",
+                                newReview.rating >= star ? "text-sahara-gold" : "text-gray-300"
+                              )}
+                            >
+                              <Star size={24} fill={newReview.rating >= star ? "currentColor" : "none"} />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold uppercase tracking-widest text-gray-400">Date</label>
+                        <input 
+                          type="date" 
+                          required 
+                          value={newReview.date}
+                          onChange={(e) => setNewReview({ ...newReview, date: e.target.value })}
+                          className="w-full p-4 bg-sand-50 rounded-2xl border border-sand-200 focus:outline-none focus:border-sahara-gold" 
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold uppercase tracking-widest text-gray-400">Votre Avis</label>
+                      <textarea 
+                        required 
+                        value={newReview.text}
+                        onChange={(e) => setNewReview({ ...newReview, text: e.target.value })}
+                        className="w-full p-4 bg-sand-50 rounded-2xl border border-sand-200 focus:outline-none focus:border-sahara-gold h-32" 
+                      />
+                    </div>
+                    <button type="submit" className="w-full btn-primary py-4 flex items-center justify-center gap-2">
+                      Publier l'avis <Send size={18} />
+                    </button>
+                  </form>
                 </div>
               </motion.div>
             )}

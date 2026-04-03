@@ -1,12 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Mail, Phone, MapPin, Send, MessageSquare, Clock, Facebook, Instagram, Twitter } from 'lucide-react';
 import { toast } from '../components/Toast';
+import { useStore } from '../store';
+import { generateId } from '../lib/utils';
 
 export const Contact = () => {
+  const { addMessage } = useStore();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: 'Demande d\'information',
+    message: ''
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    addMessage({
+      id: generateId(),
+      ...formData,
+      status: 'unread',
+      createdAt: new Date().toLocaleString()
+    });
+
     toast.success("Message envoyé ! Nous vous répondrons sous 24h.");
+    setFormData({ name: '', email: '', subject: 'Demande d\'information', message: '' });
   };
 
   return (
@@ -59,16 +78,32 @@ export const Contact = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-widest text-gray-400">Nom complet</label>
-                  <input type="text" required className="w-full p-4 bg-sand-50 rounded-2xl border border-sand-200 focus:outline-none focus:border-sahara-gold" />
+                  <input 
+                    type="text" 
+                    required 
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full p-4 bg-sand-50 rounded-2xl border border-sand-200 focus:outline-none focus:border-sahara-gold" 
+                  />
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-widest text-gray-400">Email</label>
-                  <input type="email" required className="w-full p-4 bg-sand-50 rounded-2xl border border-sand-200 focus:outline-none focus:border-sahara-gold" />
+                  <input 
+                    type="email" 
+                    required 
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="w-full p-4 bg-sand-50 rounded-2xl border border-sand-200 focus:outline-none focus:border-sahara-gold" 
+                  />
                 </div>
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-widest text-gray-400">Sujet</label>
-                <select className="w-full p-4 bg-sand-50 rounded-2xl border border-sand-200 focus:outline-none focus:border-sahara-gold">
+                <select 
+                  value={formData.subject}
+                  onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                  className="w-full p-4 bg-sand-50 rounded-2xl border border-sand-200 focus:outline-none focus:border-sahara-gold"
+                >
                   <option>Demande d'information</option>
                   <option>Réservation de groupe</option>
                   <option>Voyage sur mesure</option>
@@ -77,7 +112,12 @@ export const Contact = () => {
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-widest text-gray-400">Message</label>
-                <textarea required className="w-full p-4 bg-sand-50 rounded-2xl border border-sand-200 focus:outline-none focus:border-sahara-gold h-40" />
+                <textarea 
+                  required 
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  className="w-full p-4 bg-sand-50 rounded-2xl border border-sand-200 focus:outline-none focus:border-sahara-gold h-40" 
+                />
               </div>
               <button type="submit" className="w-full btn-primary py-4 flex items-center justify-center gap-2">
                 Envoyer le message <Send size={18} />
